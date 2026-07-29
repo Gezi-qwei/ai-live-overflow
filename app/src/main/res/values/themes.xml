@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.AILiveOverflow" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#6B8BFF</item>
+        <item name="colorPrimaryVariant">#3D5AFE</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+    </style>
+</resources>
