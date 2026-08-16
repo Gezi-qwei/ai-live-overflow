@@ -1,29 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="120dp"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="8dp"
-    android:background="@drawable/bg_ghost">
+    android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/ivGhost"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/ghost"
-        android:scaleType="fitCenter" />
-
-    <TextView
-        android:id="@+id/tvMessage"
-        android:layout_width="match_parent"
+    <!-- 幽灵猫咪容器，用于整体动画 -->
+    <FrameLayout
+        android:id="@+id/ghostContainer"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="幽灵在线中..."
-        android:textColor="#CCFFFFFF"
-        android:textSize="11sp"
-        android:gravity="center"
-        android:maxLines="3"
-        android:ellipsize="end"
-        android:paddingTop="4dp" />
+        android:layout_gravity="center">
 
-</LinearLayout>
+        <!-- 像素幽灵猫咪 -->
+        <ImageView
+            android:id="@+id/ivGhost"
+            android:layout_width="120dp"
+            android:layout_height="135dp"
+            android:src="@drawable/ghost_cat_pixel"
+            android:scaleType="fitCenter" />
+
+    </FrameLayout>
+
+    <!-- 消息气泡（初始隐藏） -->
+    <LinearLayout
+        android:id="@+id/messageBubble"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bubble_background"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="180dp"
+            android:text=""
+            android:textColor="#2A2723"
+            android:textSize="12sp"
+            android:maxLines="4"
+            android:ellipsize="end" />
+
+    </LinearLayout>
+
+</FrameLayout>
