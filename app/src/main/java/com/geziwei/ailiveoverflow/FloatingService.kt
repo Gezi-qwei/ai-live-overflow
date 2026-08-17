@@ -77,8 +77,9 @@ class FloatingService : Service() {
             y = 200
         }
 
-        // 拖拽手势：在 floatingView 层处理，不拦截传给 WebView 的点击事件
-        floatingView.setOnTouchListener { _, event ->
+        // 拖拽挂在 WebView 上：WebView 自己收事件，超过阈值时移动悬浮窗，
+        // 未超阈值时把事件透传给 WebView 内部 JS 处理手势。
+        petWebView.setOnTouchListener { v, event ->
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
                     dragStartX = event.rawX
@@ -86,7 +87,8 @@ class FloatingService : Service() {
                     dragStartParamX = windowParams.x
                     dragStartParamY = windowParams.y
                     isDragging = false
-                    false // 不消费，先传给 WebView
+                    v.onTouchEvent(event) // 传给 WebView，让 JS 也收到 DOWN
+                    true // 必须消费 DOWN，否则收不到后续 MOVE
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val dx = event.rawX - dragStartX
@@ -98,17 +100,20 @@ class FloatingService : Service() {
                         windowParams.x = (dragStartParamX - dx).toInt()
                         windowParams.y = (dragStartParamY + dy).toInt()
                         windowManager.updateViewLayout(floatingView, windowParams)
-                        true // 拖拽时消费事件
+                        true
                     } else {
-                        false
+                        v.onTouchEvent(event)
+                        true
                     }
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    val wasDragging = isDragging
+                    if (!isDragging) {
+                        v.onTouchEvent(event) // 没拖拽，透传 UP 给 WebView JS
+                    }
                     isDragging = false
-                    wasDragging // 拖拽结束消费事件，点击则不消费让 WebView 处理
+                    true
                 }
-                else -> false
+                else -> v.onTouchEvent(event)
             }
         }
 
