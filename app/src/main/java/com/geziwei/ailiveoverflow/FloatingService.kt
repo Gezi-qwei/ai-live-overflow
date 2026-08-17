@@ -59,8 +59,6 @@ class FloatingService : Service() {
         petWebView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
-            // 透明背景
-            setBackgroundColor(0x00000000)
         }
         petWebView.setBackgroundColor(0x00000000)
         petWebView.webViewClient = WebViewClient()
