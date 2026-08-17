@@ -60,6 +60,11 @@
   /* ════════════════════════════════════════
      动作1：Wink
   ════════════════════════════════════════ */
+  /* wink 期间暂停 idle-eye g 整体的 scaleY，避免左眼随之眨动 */
+  #pet-svg.do-wink .idle-eye {
+    animation-play-state: paused !important;
+    transform: scaleY(1) !important;
+  }
   #pet-svg.do-wink .w-eye-r {
     transform-box: fill-box;
     transform-origin: center center;
@@ -675,16 +680,7 @@
     <text class="w-star" style="--tx:2px;--ty:-3px;animation-delay:.16s"
           x="11.5" y="1" font-size="1.6" fill="#fff0a0" opacity="0">✦</text>
 
-    <!-- 摸摸头的手 -->
-    <g class="p-hand" transform="translate(3.5, -16)">
-      <rect x="1" y="3" width="7" height="4" fill="#f5c5a0"/>
-      <rect x="0" y="4" width="1" height="2" fill="#f5c5a0"/>
-      <rect x="1" y="1" width="1" height="2" fill="#f5c5a0"/>
-      <rect x="3" y="0" width="2" height="3" fill="#f5c5a0"/>
-      <rect x="5" y="1" width="1" height="2" fill="#f5c5a0"/>
-      <rect x="7" y="2" width="1" height="2" fill="#f5c5a0"/>
-      <rect x="2" y="7" width="5" height="2" fill="#f5c5a0"/>
-    </g>
+    <!-- 摸摸头的手已移除 -->
     <!-- 摸摸头星星 -->
     <text class="p-sparkle" style="--sd:.3s;--sx:-3px;--sy:-5px"
           x="5" y="-8" font-size="1.8" fill="#ffe066">✦</text>
@@ -755,11 +751,13 @@
         />
       </g>
 
-      <!-- 普通眼睛（待机眨眼；各动作触发时按需隐藏） -->
-      <rect class="idle-eye b-eye p-eye s-eye-rect a-eye-rect sc-eye-rect pc-eye-rect"
-            x="4"  y="8" width="1" height="2" fill="#000"/>
-      <rect class="idle-eye w-eye-r b-eye p-eye s-eye-rect a-eye-rect sc-eye-rect pc-eye-rect"
-            x="10" y="8" width="1" height="2" fill="#000"/>
+      <!-- 普通眼睛（待机眨眼同步；g 整体做 scaleY，避免左右轮流） -->
+      <g class="idle-eye">
+        <rect class="b-eye p-eye s-eye-rect a-eye-rect sc-eye-rect pc-eye-rect"
+              x="4"  y="8" width="1" height="2" fill="#000"/>
+        <rect class="w-eye-r b-eye p-eye s-eye-rect a-eye-rect sc-eye-rect pc-eye-rect"
+              x="10" y="8" width="1" height="2" fill="#000"/>
+      </g>
 
       <!-- 挠头迷茫小点眼（· ·） -->
       <circle class="sc-eye-dot" cx="4.5"  cy="9" r="0.55" fill="#000"/>
