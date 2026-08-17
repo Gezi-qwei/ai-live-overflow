@@ -65,9 +65,13 @@ class FloatingService : Service() {
         petWebView.loadUrl("file:///android_asset/pet.html")
 
         // 悬浮窗参数
+        // dp 转 px：200dp × 220dp，与 pet.html 的 stage 尺寸对应
+        val density = resources.displayMetrics.density
+        val wPx = (200 * density).toInt()
+        val hPx = (220 * density).toInt()
         windowParams = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
+            wPx,
+            hPx,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
