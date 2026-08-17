@@ -67,8 +67,8 @@ class FloatingService : Service() {
         // 悬浮窗参数
         // dp 转 px：200dp × 220dp，与 pet.html 的 stage 尺寸对应
         val density = resources.displayMetrics.density
-        val wPx = (200 * density).toInt()
-        val hPx = (220 * density).toInt()
+        val wPx = (80 * density).toInt()
+        val hPx = (80 * density).toInt()
         windowParams = WindowManager.LayoutParams(
             wPx,
             hPx,
