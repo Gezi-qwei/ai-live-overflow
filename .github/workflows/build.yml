@@ -1,30 +1,41 @@
 name: Build APK
-
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: temurin
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
       - name: Build debug APK
         run: ./gradlew assembleDebug
-
-      - name: Upload APK
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
           path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Get short SHA
+        id: sha
+        run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ steps.sha.outputs.short }}
+          name: "Clawd 桌宠 (build ${{ steps.sha.outputs.short }})"
+          body: |
+            自动构建 — 提交 ${{ github.sha }}
+            
+            下载 APK 安装到手机即可使用 🦀
+          files: app/build/outputs/apk/debug/app-debug.apk

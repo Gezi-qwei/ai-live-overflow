@@ -19,7 +19,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: visible;
+    overflow: hidden;
   }
 
   #pet-svg {
@@ -197,13 +197,10 @@
     100% { opacity:0;   transform: translate(var(--bx3),var(--by3)) scale(.7); }
   }
 
-  /* 动作5：摸摸头已移除 */
-  20%,50% { opacity:.8; transform: translate(var(--sx),var(--sy)) scale(1); }
-    100%    { opacity:0; transform: translate(var(--sx), calc(var(--sy) - 2px)) scale(.5); }
-  }
+   /* 动作5：摸摸头已移除 */
 
-  /* ════════════════════════════════════════
-     动作6：说话气泡
+   /* ════════════════════════════════════════
+      动作6：说话气泡
   ════════════════════════════════════════ */
   #pet-svg.do-talk .t-body {
     transform-origin: 7.5px 12px;
@@ -229,10 +226,9 @@
     font-size: 9px;
     font-family: 'Segoe UI', system-ui, sans-serif;
     line-height: 1.5;
-    padding: 3px 7px;
+    padding: 4px 8px;
     border-radius: 6px;
-    white-space: normal; width: fit-content; word-break: break-word;
-    max-width: 160px;
+    white-space: nowrap;
     text-align: center;
     box-shadow: 0 2px 6px rgba(0,0,0,.3);
     pointer-events: none;
@@ -446,6 +442,177 @@
   }
 
   /* ════════════════════════════════════════
+     单击动作：浇花 do-water-flower
+     图层（从下到上）：螃蟹 → 花盆 → 花朵 → 水壶(随右钳) → 水滴
+   ════════════════════════════════════════ */
+
+  /* 浇花专用右钳（默认隐藏，浇花时替换原 b-arm-group） */
+  .wf-arm-r { opacity: 0; }
+  #pet-svg.do-water-flower .wf-arm-r {
+    opacity: 1;
+    transform-box: fill-box; transform-origin: left top;
+    animation: wf-arm 3s ease-in-out forwards !important;
+  }
+  @keyframes wf-arm {
+    0%,10%   { transform: rotate(0deg); }
+    22%,72%  { transform: rotate(-18deg); }
+    90%,100% { transform: rotate(0deg); }
+  }
+  /* 浇花时隐藏原右钳（避免两条钳子重叠） */
+  #pet-svg.do-water-flower #b-arm-group { opacity: 0; }
+
+  /* 水壶：平时隐藏，浇花时出现（只改 opacity，不写 transform，避免覆盖 x/y 坐标） */
+  .wf-can { opacity: 0; }
+  #pet-svg.do-water-flower .wf-can {
+    animation: wf-can-show 3s ease-out forwards !important;
+  }
+  @keyframes wf-can-show {
+    0%,14%   { opacity:0; }
+    24%      { opacity:1; }
+    78%      { opacity:1; }
+    90%,100% { opacity:0; }
+  }
+
+  /* 花盆：平时隐藏，浇花时出现（只改 opacity，不碰 transform） */
+  .wf-pot { opacity: 0; }
+  #pet-svg.do-water-flower .wf-pot {
+    animation: wf-pot-show 3s ease-out forwards !important;
+  }
+  @keyframes wf-pot-show {
+    0%,6%    { opacity:0; }
+    16%      { opacity:1; }
+    80%      { opacity:1; }
+    92%,100% { opacity:0; }
+  }
+
+  /* 小苗生长（transform-box: view-box 保证缩放基准正确） */
+  .wf-sprout { opacity: 0; }
+  #pet-svg.do-water-flower .wf-sprout {
+    transform-box: view-box;
+    transform-origin: 12.05px 13.4px;
+    animation: wf-grow 3s ease-in-out forwards !important;
+  }
+  @keyframes wf-grow {
+    0%,22%  { opacity:0; transform: scaleY(0); }
+    32%     { opacity:1; transform: scaleY(.3); }
+    50%     { opacity:1; transform: scaleY(.7); }
+    62%     { opacity:1; transform: scaleY(1); }
+    80%     { opacity:1; transform: scaleY(1); }
+    92%,100%{ opacity:0; transform: scaleY(1); }
+  }
+
+  /* 花朵绽放 */
+  .wf-bloom { opacity: 0; transform-box: view-box; transform-origin: 12.05px 10.8px; }
+  #pet-svg.do-water-flower .wf-bloom {
+    animation: wf-bloom 3s ease-out forwards !important;
+  }
+  @keyframes wf-bloom {
+    0%,48%  { opacity:0; transform: scale(0); }
+    58%     { opacity:1; transform: scale(1.2); }
+    64%,80% { opacity:1; transform: scale(1); }
+    92%,100%{ opacity:0; transform: scale(.6); }
+  }
+
+  /* 水滴下落 */
+  .wf-drop { opacity: 0; }
+  #pet-svg.do-water-flower .wf-drop {
+    animation: wf-drop 3s var(--wfd, 0s) forwards linear !important;
+  }
+  @keyframes wf-drop {
+    0%,24%  { opacity:0; transform: translateY(0); }
+    28%     { opacity:0; transform: translateY(0); }
+    34%     { opacity:.9; transform: translateY(1px); }
+    50%     { opacity:.7; transform: translateY(4px); }
+    62%     { opacity:.35; transform: translateY(6px); }
+    66%,100%{ opacity:0; transform: translateY(8px); }
+  }
+
+  /* 浇花时的弯弯笑眼 */
+  .wf-happy-eye { opacity: 0; }
+  #pet-svg.do-water-flower .wf-happy-eye {
+    animation: wf-eye-show 3s forwards !important;
+  }
+  @keyframes wf-eye-show {
+    0%,18%  { opacity:0; }
+    24%     { opacity:1; }
+    78%     { opacity:1; }
+    88%,100%{ opacity:0; }
+  }
+  #pet-svg.do-water-flower .idle-eye {
+    animation: wf-eye-hide 3s forwards !important;
+  }
+  @keyframes wf-eye-hide {
+    0%,18%  { opacity:1; }
+    24%     { opacity:0; }
+    78%     { opacity:0; }
+    88%,100%{ opacity:1; }
+  }
+
+  /* ════════════════════════════════════════
+     单击动作：听音乐 do-listen-music
+     耳机 + 音符飘浮 + 身体摇摆 + 哼唱嘴
+   ════════════════════════════════════════ */
+  /* 道具默认隐藏 */
+  .lm-headphone, .lm-note, .lm-happy-eye, .lm-mouth { opacity: 0; }
+
+  /* 激活时：身体左右摇摆（跟节拍晃） */
+  #pet-svg.do-listen-music .lm-body {
+    transform-origin: 7.5px 13px;
+    animation: lm-sway 1.1s ease-in-out infinite !important;
+  }
+  @keyframes lm-sway {
+    0%,100% { transform: rotate(-3deg); }
+    50%     { transform: rotate(3deg); }
+  }
+
+  /* 激活时：暂停眨眼，换享受弯弯眼 */
+  #pet-svg.do-listen-music .idle-eye {
+    animation: lm-eye-hide .4s forwards !important;
+  }
+  @keyframes lm-eye-hide {
+    0%   { opacity:1; }
+    100% { opacity:0; }
+  }
+  #pet-svg.do-listen-music .lm-happy-eye {
+    animation: lm-eye-show .4s forwards !important;
+  }
+  @keyframes lm-eye-show {
+    0%   { opacity:0; }
+    100% { opacity:1; }
+  }
+
+  /* 激活时：耳机出现（从上方落下） */
+  #pet-svg.do-listen-music .lm-headphone {
+    animation: lm-hp-show .5s ease-out forwards !important;
+  }
+  @keyframes lm-hp-show {
+    0%   { opacity:0; transform: translateY(-2px); }
+    100% { opacity:1; transform: translateY(0); }
+  }
+
+  /* 激活时：嘴巴哼唱 */
+  #pet-svg.do-listen-music .lm-mouth {
+    transform-box: fill-box; transform-origin: center center;
+    animation: lm-hum .6s .3s ease-in-out infinite alternate !important;
+  }
+  @keyframes lm-hum {
+    0%   { opacity:1; transform: scaleY(.7); }
+    100% { opacity:1; transform: scaleY(1.2); }
+  }
+
+  /* 音符飘起 */
+  .lm-note { font-family: serif; font-size: 3px; }
+  #pet-svg.do-listen-music .lm-note {
+    animation: lm-float var(--nd, 2s) var(--ndelay, 0s) infinite ease-out !important;
+  }
+  @keyframes lm-float {
+    0%   { opacity: 0; transform: translate(0, 0) scale(.6); }
+    12%  { opacity: .85; transform: translate(var(--nx, 0px), -1px) scale(1); }
+    55%  { opacity: .7; transform: translate(var(--nx2, 1px), -5px) scale(.9); }
+    100% { opacity: 0; transform: translate(var(--nx3, 0px), -10px) scale(.5); }
+  }
+
+  /* ════════════════════════════════════════
      双击动作B：比耶
    ════════════════════════════════════════ */
   #pet-svg.do-peace .pc-body {
@@ -594,6 +761,310 @@
     80%  { transform: rotate(25deg); }
     100% { transform: rotate(0deg); }
   }
+
+  /* ════════════════════════════════════════
+     电量感知装饰层
+  ════════════════════════════════════════ */
+
+  /* 充电闪电（黄色，持续浮动） */
+  #batt-bolt {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #batt-bolt.show {
+    opacity: 1;
+    animation: bolt-float 2s ease-in-out infinite;
+  }
+  @keyframes bolt-float {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-1.2px); }
+  }
+
+  /* 低电量闪电（红色，快速闪烁） */
+  #batt-bolt-low {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #batt-bolt-low.show {
+    opacity: 1;
+    animation: bolt-blink 1.1s ease-in-out infinite;
+  }
+  @keyframes bolt-blink {
+    0%,100% { opacity: 1; transform: translateY(0); }
+    50%     { opacity: 0.35; transform: translateY(0); }
+  }
+
+  /* 低电量皱眉（持久状态 class） */
+  #pet-svg.state-low-battery .lb-brow { opacity: 1 !important; }
+  .lb-brow { opacity: 0; transition: opacity 0.4s; pointer-events: none; }
+
+  /* ════════════════════════════════════════
+     睡眠作息系统
+  ════════════════════════════════════════ */
+  
+  /* 睡眠专属眼睛层（默认隐藏） */
+  .eye-sleep { opacity: 0; }
+  .eye-daze  { opacity: 0; }
+  
+  /* 打哈欠：眼皮慢慢下垂 */
+  #pet-svg.phase-yawn .idle-eye {
+    animation: yawn-droop 1.8s ease-in forwards !important;
+  }
+  @keyframes yawn-droop {
+    0%   { transform: scaleY(1); }
+    100% { transform: scaleY(0.05); }
+  }
+  
+  /* 睡着：横线闭眼 + 身体起伏 */
+  #pet-svg.phase-sleep .idle-eye  { animation: none !important; transform: scaleY(0.05); }
+  #pet-svg.phase-sleep .eye-sleep { opacity: 1; }
+  #pet-svg.phase-sleep .idle-body {
+    animation: sleep-breathe 3s ease-in-out infinite !important;
+  }
+  @keyframes sleep-breathe {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-.3px); }
+  }
+  
+  /* 苏醒：横线慢慢消失 */
+  #pet-svg.phase-waking .idle-eye   { animation: none !important; transform: scaleY(0.05); }
+  #pet-svg.phase-waking .eye-sleep  { opacity: 1; animation: eye-open .9s ease-out forwards; }
+  #pet-svg.phase-waking .eye-daze   { opacity: 1; }
+  @keyframes eye-open {
+    0%   { opacity: 1; transform: scaleY(1); }
+    100% { opacity: 0; transform: scaleY(0.05); }
+  }
+  
+  /* 回神：半睁呆眨 */
+  #pet-svg.phase-daze .idle-eye { animation: none !important; transform: scaleY(0.05); }
+  #pet-svg.phase-daze .eye-daze {
+    opacity: 1;
+    animation: daze-blink .72s ease-in-out 3;
+  }
+  @keyframes daze-blink {
+    0%,100% { transform: scaleY(0.45); }
+    50%     { transform: scaleY(0.05); }
+  }
+  
+  /* 生气：用 pet.html 里原有的 a-eye-angry */
+  #pet-svg.phase-angry .idle-eye    { animation: none !important; transform: scaleY(0.05); }
+  #pet-svg.phase-angry .a-eye-angry { opacity: 1 !important; }
+  
+  /* 重新入睡：半睁慢闭 + 身体起伏 */
+  #pet-svg.phase-resleep .idle-eye { animation: none !important; transform: scaleY(0.05); }
+  #pet-svg.phase-resleep .eye-daze {
+    opacity: 1;
+    animation: eye-droop-half 1.5s ease-in forwards;
+  }
+  #pet-svg.phase-resleep .idle-body {
+    animation: sleep-breathe 3s ease-in-out infinite !important;
+  }
+  @keyframes eye-droop-half {
+    0%   { transform: scaleY(1); }
+    100% { transform: scaleY(0.05); }
+  }
+  
+  /* a-eye-angry 默认隐藏 */
+  .a-eye-angry { opacity: 0; transition: opacity 0.15s; }
+  
+  /* zzz */
+  .zzz { pointer-events: none; opacity: 0; fill: #aaccff; }
+  #pet-svg.phase-sleep   .zzz,
+  #pet-svg.phase-resleep .zzz { animation: zzz-float 3s ease-in-out infinite; }
+  #pet-svg.phase-sleep   .zzz:nth-of-type(2),
+  #pet-svg.phase-resleep .zzz:nth-of-type(2) { animation-delay: 1s; }
+  #pet-svg.phase-sleep   .zzz:nth-of-type(3),
+  #pet-svg.phase-resleep .zzz:nth-of-type(3) { animation-delay: 2s; }
+  @keyframes zzz-float {
+    0%   { opacity: 0; transform: translate(0,0); }
+    20%  { opacity: 0.8; }
+    70%  { opacity: 0.8; }
+    100% { opacity: 0; transform: translate(0,-6px); }
+  }
+
+  /* ════════════════════════════════════════
+      吃饭动画系统（照搬 clawd-rice-meal-demo.html）
+  ════════════════════════════════════════ */
+  #meal-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 80px; height: 80px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    image-rendering: pixelated;
+  }
+  .state-meal #meal-svg { opacity: 1; pointer-events: none; }
+  .state-meal #pet-svg { opacity: 0; pointer-events: none; }
+
+  #meal-svg .rm-body { transform-box: view-box; transform-origin: 7.5px 13px; animation: rm-bob 2.8s ease-in-out infinite; }
+  #meal-svg .rm-shadow { transform-box: view-box; transform-origin: 7.5px 15.5px; animation: rm-shadow 2.8s ease-in-out infinite; }
+  @keyframes rm-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-.35px); } }
+  @keyframes rm-shadow { 0%,100% { transform: scaleX(1); opacity:.45; } 50% { transform: scaleX(.94); opacity:.35; } }
+  #meal-svg .rm-eye { transform-box: fill-box; transform-origin: center; animation: rm-blink 3.7s infinite; }
+  @keyframes rm-blink { 0%,45%,55%,100% { transform: scaleY(1); } 50% { transform: scaleY(.08); } }
+  #meal-svg .rm-larm { transform-box: view-box; transform-origin: 2px 10px; }
+  #meal-svg .rm-bowl { transform-box: view-box; transform-origin: 7.5px 13px; }
+  #meal-svg .rm-spoon { transform-box: view-box; transform-origin: 13px 10px; }
+  #meal-svg.eating .rm-spoon { animation: rm-feed 3.2s ease-in-out infinite; }
+  @keyframes rm-feed { 0%,15% { transform: translate(0,0); } 38%,56% { transform: translate(-3.2px,-1.65px); } 78%,100% { transform: translate(0,0); } }
+  #meal-svg .rm-mouth-open, #meal-svg .rm-happy-eye, #meal-svg .rm-happy-mouth { opacity:0; }
+  #meal-svg.eating .rm-eye { animation: rm-eye-hide 6.4s ease-in-out infinite, rm-blink 3.7s infinite; }
+  @keyframes rm-eye-hide { 0%,37% { opacity:1; } 40%,49% { opacity:0; } 52%,100% { opacity:1; } }
+  #meal-svg.eating .rm-mouth { animation: rm-mouth 6.4s ease-in-out infinite; }
+  #meal-svg.eating .rm-mouth-open { animation: rm-open 6.4s ease-in-out infinite; }
+  #meal-svg.eating .rm-happy-eye, #meal-svg.eating .rm-happy-mouth { animation: rm-happy 6.4s ease-in-out infinite; }
+  @keyframes rm-mouth { 0%,16% { opacity:1; } 20%,30% { opacity:0; } 34%,37% { opacity:1; } 40%,49% { opacity:0; } 52%,66% { opacity:1; } 70%,80% { opacity:0; } 84%,100% { opacity:1; } }
+  @keyframes rm-open { 0%,18% { opacity:0; } 20%,30% { opacity:1; } 32%,68% { opacity:0; } 70%,80% { opacity:1; } 82%,100% { opacity:0; } }
+  @keyframes rm-happy { 0%,37% { opacity:0; } 40%,49% { opacity:1; } 52%,100% { opacity:0; } }
+  #meal-svg .rm-steam { opacity:0; }
+  #meal-svg.eating .rm-steam { animation: rm-steam 2.6s ease-in-out infinite; }
+  #meal-svg.eating .rm-steam.s2 { animation-delay:-1.3s; }
+  @keyframes rm-steam { 0% { opacity:0; transform:translate(0,1px); } 25% { opacity:.6; } 100% { opacity:0; transform:translate(-1px,-7px); } }
+
+  /* ════════════════════════════════════════
+     洗澡动画系统（照搬 demo 结构）
+  ════════════════════════════════════════ */
+
+  /* 浴帘覆盖层容器 */
+  .curtain-wrap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 80px; height: 80px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* 左帘：初始完全隐藏 */
+  .curtain-left {
+    position: absolute; top: 0; left: 0;
+    width: 50%; height: 100%;
+    background: repeating-linear-gradient(
+      90deg,
+      #f0f4f8 0px, #f0f4f8 6px,
+      #dde4ec 6px, #dde4ec 8px
+    );
+    transform: translateX(-100%);
+    visibility: hidden;
+  }
+  /* 右帘：初始完全隐藏 */
+  .curtain-right {
+    position: absolute; top: 0; right: 0;
+    width: 50%; height: 100%;
+    background: repeating-linear-gradient(
+      90deg,
+      #dde4ec 0px, #dde4ec 2px,
+      #f0f4f8 2px, #f0f4f8 8px
+    );
+    transform: translateX(100%);
+    visibility: hidden;
+  }
+  /* 帘子动画：合拢快（0.8s），拉开慢（1.4s） */
+  .curtain-left, .curtain-right {
+    transition: transform 0.8s cubic-bezier(.4,0,.2,1);
+  }
+  .curtain-left.opening, .curtain-right.opening {
+    transition: transform 1.4s cubic-bezier(.4,0,.2,1);
+  }
+  /* 帘子激活（可见） */
+  .curtain-left.active, .curtain-right.active {
+    visibility: visible;
+  }
+  /* 帘子合拢 */
+  .curtain-left.closed  { transform: translateX(0); }
+  .curtain-right.closed { transform: translateX(0); }
+  /* 帘子拉开（移到屏幕外） */
+  .curtain-left.opening  { transform: translateX(-100%); }
+  .curtain-right.opening { transform: translateX(100%); }
+
+  /* 浴帘上的小圆环 */
+  .curtain-rings {
+    position: absolute; top: 3px; left: 0; right: 0;
+    display: flex; justify-content: space-around; padding: 0 2px;
+  }
+  .ring {
+    width: 5px; height: 5px; border-radius: 50%;
+    border: 1px solid #aab4c0; background: #c8d4e0;
+  }
+
+  /* 洗澡 SVG 层（绝对定位，覆盖在 pet-svg 上） */
+  #shower-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 80px; height: 80px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .state-shower #shower-svg { opacity: 1; pointer-events: none; }
+  .state-shower #pet-svg    { opacity: 0; pointer-events: none; }
+
+  /* 交互锁定 */
+  .stage.locked {
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  /* ── 洗澡 SVG 动画（照搬 demo） ── */
+  #shower-svg .sh-body { transform-origin: 7.5px 13px; animation: sh-bob 2s infinite ease-in-out; }
+  #shower-svg .sh-shad { transform-origin: 7.5px 15.5px; animation: sh-shadow 2s infinite ease-in-out; }
+  #shower-svg .sh-eye  { transform-origin: 7.5px 9px; animation: sh-blink 3.4s infinite; }
+  #shower-svg .sh-larm { transform-origin: 2px 10px; animation: sh-scrub 0.6s infinite ease-in-out alternate; }
+  #shower-svg .sh-rarm { transform-origin: 13px 10px; animation: sh-rwave 2s infinite ease-in-out; }
+  #shower-svg .sh-head { transform-origin: 20px -5px; animation: sh-headwag 3s infinite ease-in-out; }
+  #shower-svg .sh-drop {
+    opacity: 0;
+    animation: sh-drop var(--dd,0.8s) var(--ds,0s) infinite linear;
+  }
+  #shower-svg .sh-bubble {
+    opacity: 0;
+    animation: sh-bubble var(--bd2,2s) var(--bs,0s) infinite ease-out;
+  }
+  #shower-svg .sh-foam { animation: sh-foam-pulse 1.2s infinite ease-in-out alternate; }
+
+  @keyframes sh-bob {
+    0%,100%{ transform: translateY(0); }
+    50%    { transform: translateY(-.5px); }
+  }
+  @keyframes sh-shadow {
+    0%,100%{ transform: scaleX(1); opacity: .5; }
+    50%    { transform: scaleX(.96); opacity: .44; }
+  }
+  @keyframes sh-blink {
+    0%,44%,56%,100%{ transform: scaleY(1); }
+    50%            { transform: scaleY(.08); }
+  }
+  @keyframes sh-scrub {
+    0%  { transform: rotate(-30deg); }
+    100%{ transform: rotate(20deg); }
+  }
+  @keyframes sh-rwave {
+    0%,100%{ transform: rotate(-15deg); }
+    50%    { transform: rotate(5deg); }
+  }
+  @keyframes sh-headwag {
+    0%,100%{ transform: rotate(0deg); }
+    40%    { transform: rotate(-6deg); }
+    70%    { transform: rotate(4deg); }
+  }
+  @keyframes sh-drop {
+    0%  { opacity: 0; transform: translateY(0); }
+    15% { opacity: .85; }
+    85% { opacity: .7; }
+    100%{ opacity: 0; transform: translateY(var(--dy,12px)); }
+  }
+  @keyframes sh-bubble {
+    0%  { opacity: 0; transform: translateY(0) scale(.4); }
+    20% { opacity: .7; transform: translateY(-1px) scale(1); }
+    80% { opacity: .4; transform: translateY(var(--by,-7px)) scale(1.1); }
+    100%{ opacity: 0; transform: translateY(var(--by2,-10px)) scale(1.3); }
+  }
+  @keyframes sh-foam-pulse {
+    0%  { fill: #b0e8ff; }
+    100%{ fill: #e0f8ff; }
+  }
 </style>
 </head>
 <body>
@@ -602,6 +1073,7 @@
 
   <div id="talk-bubble"></div>
 
+  <!-- 待机 SVG -->
   <svg id="pet-svg" xmlns="http://www.w3.org/2000/svg" viewBox="-4 -21 23 41">
 
     <!-- 阴影 -->
@@ -662,7 +1134,7 @@
          多个动作 class 挂同一个 g，
          哪个动作激活对应 class 的 animation 就生效
     ════════════════════════════════════ -->
-    <g class="idle-body h-crab s-body a-body wv-body sc-body pc-body">
+    <g class="idle-body h-crab s-body a-body wv-body sc-body pc-body lm-body">
 
       <!-- 腿 -->
       <g fill="#DE886D">
@@ -702,6 +1174,21 @@
           calcMode="spline"
           keySplines="0 0 1 1; .4 0 .2 1; 0 0 1 1; .4 0 .2 1"
         />
+      </g>
+
+      <!-- 浇花专用右钳 + 水壶（默认隐藏；水壶用 x/y 定位，不写 transform 以免被覆盖） -->
+      <g class="wf-arm-r">
+        <rect x="13" y="9" width="2" height="2" fill="#DE886D"/>
+        <g class="wf-can">
+          <!-- 壶身 -->
+          <rect x="13" y="6.6" width="2.8" height="2.2" rx=".3" fill="#6fb3d9"/>
+          <rect x="13" y="6.6" width="2.8" height=".6" rx=".3" fill="#8fcbe8"/>
+          <!-- 把手 -->
+          <path d="M13.4 6.6 C13.4 5.1 15.4 5.1 15.4 6.6" fill="none" stroke="#4d92b8" stroke-width=".4" stroke-linecap="round"/>
+          <!-- 壶嘴（朝左下，对准花盆） -->
+          <path d="M13 7.3 L11.4 6.7 L11.5 7.3 L13 8 Z" fill="#6fb3d9"/>
+          <rect x="11.1" y="6.7" width=".5" height=".7" rx=".15" fill="#3f7fa3"/>
+        </g>
       </g>
 
       <!-- 普通眼睛（待机眨眼同步；g 整体做 scaleY，避免左右轮流） -->
@@ -757,7 +1244,77 @@
       <!-- 吹泡泡嘴 -->
       <circle id="b-mouth" cx="7.5" cy="11.5" r="0" fill="#000"/>
 
+      <!-- 浇花弯弯笑眼 -->
+      <path class="wf-happy-eye"
+        d="M 3.8,8.5 Q 4.5,7.6 5.2,8.5"
+        fill="none" stroke="#000" stroke-width="0.55" stroke-linecap="round"/>
+      <path class="wf-happy-eye"
+        d="M 9.8,8.5 Q 10.5,7.6 11.2,8.5"
+        fill="none" stroke="#000" stroke-width="0.55" stroke-linecap="round"/>
+
+      <!-- 听音乐享受弯弯眼 -->
+      <path class="lm-happy-eye"
+        d="M 3.8,8.8 Q 4.5,7.8 5.2,8.8"
+        fill="none" stroke="#000" stroke-width="0.55" stroke-linecap="round"/>
+      <path class="lm-happy-eye"
+        d="M 9.8,8.8 Q 10.5,7.8 11.2,8.8"
+        fill="none" stroke="#000" stroke-width="0.55" stroke-linecap="round"/>
+
+      <!-- 听音乐哼唱小嘴 -->
+      <ellipse class="lm-mouth" cx="7.5" cy="11.2" rx=".7" ry=".6" fill="#7a2230"/>
+
+      <!-- 听音乐耳机 -->
+      <g class="lm-headphone">
+        <path d="M 2.5,7.5 Q 3,3.2 7.5,2.5 Q 12,3.2 12.5,7.5"
+          fill="none" stroke="#4a4a4a" stroke-width=".8" stroke-linecap="round"/>
+        <rect x="1.2" y="7" width="2.2" height="2.6" rx=".5" fill="#5a5a5a"/>
+        <rect x="1.5" y="7.3" width="1.6" height="2" rx=".4" fill="#3a3a3a"/>
+        <rect x="1.7" y="7.6" width="1.2" height="1.4" rx=".3" fill="#4a4a4a"/>
+        <rect x="11.6" y="7" width="2.2" height="2.6" rx=".5" fill="#5a5a5a"/>
+        <rect x="11.9" y="7.3" width="1.6" height="2" rx=".4" fill="#3a3a3a"/>
+        <rect x="12.1" y="7.6" width="1.2" height="1.4" rx=".3" fill="#4a4a4a"/>
+      </g>
+
     </g><!-- end crab body group -->
+
+    <!-- ════ 浇花道具（图层在螃蟹之上：花盆 → 花朵 → 水滴） ════ -->
+
+    <!-- 【花盆】盖住螃蟹右脚 -->
+    <g class="wf-pot" transform="translate(10.4, 13.6)">
+      <path d="M0 0 h3.5 l-.5 2.5 h-2.5 Z" fill="#c96a4a"/>
+      <rect x="-.3" y="-.5" width="4.1" height=".7" rx=".2" fill="#e07d5a"/>
+      <ellipse cx="1.75" cy="-.1" rx="1.5" ry=".4" fill="#593a24"/>
+    </g>
+
+    <!-- 【花朵/小苗】在花盆之上，根茎在盆口，往上长 -->
+    <g class="wf-sprout">
+      <rect x="11.85" y="11.2" width=".4" height="2.2" rx=".2" fill="#4caf50"/>
+      <ellipse cx="11.15" cy="12.5" rx=".8" ry=".5" fill="#66bb6a" transform="rotate(-25,11.15,12.5)"/>
+      <ellipse cx="12.75" cy="12.0" rx=".8" ry=".5" fill="#66bb6a" transform="rotate(25,12.75,12.0)"/>
+      <circle class="wf-bloom" cx="12.05" cy="10.8" r="1" fill="#ff6b9d"/>
+      <circle class="wf-bloom" cx="12.05" cy="10.8" r=".35" fill="#ffd23f"/>
+    </g>
+
+    <!-- 【水滴】最上层，对准花朵位置 -->
+    <g fill="#7dcfff">
+      <rect class="wf-drop" style="--wfd:0s"    x="11.6" y="8.0" width=".45" height="1.3" rx=".22"/>
+      <rect class="wf-drop" style="--wfd:-.15s"  x="11.2" y="8.4" width=".45" height="1.3" rx=".22" fill="#9cdeff"/>
+      <rect class="wf-drop" style="--wfd:-.3s"   x="11.9" y="8.7" width=".45" height="1.3" rx=".22" fill="#b0eaff"/>
+    </g>
+
+    <!-- 【听音乐】飘动的音符 -->
+    <text class="lm-note" fill="#ff6b9d"
+      style="--nd:2.2s; --ndelay:0s; --nx:-1.5px; --nx2:-2px; --nx3:-1px"
+      x="1" y="5">♪</text>
+    <text class="lm-note" fill="#7dcfff"
+      style="--nd:2.6s; --ndelay:-.8s; --nx:1.5px; --nx2:2.5px; --nx3:1px"
+      x="13" y="4">♫</text>
+    <text class="lm-note" fill="#ffd23f"
+      style="--nd:2s; --ndelay:-1.4s; --nx:-1px; --nx2:0px; --nx3:-2px"
+      x="5" y="3">♪</text>
+    <text class="lm-note" fill="#b39ddb"
+      style="--nd:2.4s; --ndelay:-.4s; --nx:2px; --nx2:1px; --nx3:3px"
+      x="10" y="2">♩</text>
 
     <!-- 泡泡 -->
     <circle class="b-bubble"
@@ -777,12 +1334,174 @@
     <circle class="sc-q-bg" cx="14" cy="2" r="2.8" fill="#fff" opacity="0.85"/>
     <text class="sc-question" x="14" y="4" text-anchor="middle" fill="#555">?</text>
 
+    <!-- ════ 电量感知装饰层（pointer-events:none，不拦截点击） ════ -->
+
+    <!-- 低电量持久皱眉（state-low-battery 时显示） -->
+    <line class="lb-brow"
+      x1="3.2" y1="7.2" x2="5.2" y2="7.9"
+      stroke="#cc2200" stroke-width="0.55" stroke-linecap="round"/>
+    <line class="lb-brow"
+      x1="9.8" y1="7.9" x2="11.8" y2="7.2"
+      stroke="#cc2200" stroke-width="0.55" stroke-linecap="round"/>
+
+    <!-- 充电黄色闪电 -->
+    <g id="batt-bolt" transform="translate(5.75, -19)">
+      <polygon points="2,0 0.5,3 1.8,3 0,6 3.5,2.2 2.0,2.2"
+        fill="#FFD600" stroke="#FFB800" stroke-width="0.15"/>
+    </g>
+
+    <!-- 低电量红色闪电 -->
+    <g id="batt-bolt-low" transform="translate(5.75, -19)">
+      <polygon points="2,0 0.5,3 1.8,3 0,6 3.5,2.2 2.0,2.2"
+        fill="#FF2200" stroke="#CC1100" stroke-width="0.15"/>
+    </g>
+
+    <!-- ════ 睡眠作息专属图层 ════ -->
+    <g class="eye-sleep" style="transform-box:fill-box; transform-origin:center;">
+      <line x1="3.8" y1="9" x2="5.2" y2="9" stroke="#000" stroke-width=".6" stroke-linecap="round"/>
+      <line x1="9.8" y1="9" x2="11.2" y2="9" stroke="#000" stroke-width=".6" stroke-linecap="round"/>
+    </g>
+
+    <!-- 回神半睁眼 -->
+    <g class="eye-daze" style="transform-box:fill-box; transform-origin:center;">
+      <rect x="4"  y="8.5" width="1" height="1.1" fill="#000" rx=".2"/>
+      <rect x="10" y="8.5" width="1" height="1.1" fill="#000" rx=".2"/>
+    </g>
+
+    <!-- 生气眼（八字眉 + 倒弧嘴） -->
+    <rect class="a-eye-angry" x="4"  y="8" width="1" height="2" fill="#1a0000"/>
+    <rect class="a-eye-angry" x="10" y="8" width="1" height="2" fill="#1a0000"/>
+    <line class="a-eye-angry"
+      x1="3.5" y1="7.0" x2="5.2" y2="7.8"
+      stroke="#1a0000" stroke-width="0.5" stroke-linecap="round"/>
+    <line class="a-eye-angry"
+      x1="9.8" y1="7.8" x2="11.5" y2="7.0"
+      stroke="#1a0000" stroke-width="0.5" stroke-linecap="round"/>
+    <path class="a-eye-angry"
+      d="M 5.5,12.2 Q 7.5,11.2 9.5,12.2"
+      fill="none" stroke="#1a0000" stroke-width="0.45" stroke-linecap="round"/>
+
+    <!-- zzz（睡觉时浮动） -->
+    <text class="zzz" x="7.5" y="1" font-size="5" font-family="serif" font-style="italic">z</text>
+    <text class="zzz" x="10.5" y="-2" font-size="6" font-family="serif" font-style="italic">z</text>
+    <text class="zzz" x="11" y="-5" font-size="7" font-family="serif" font-style="italic">Z</text>
+
   </svg>
+
+  <!-- 吃饭 SVG（照搬 clawd-rice-meal-demo.html，初始隐藏） -->
+  <svg id="meal-svg" xmlns="http://www.w3.org/2000/svg" viewBox="-5 -8 25 27">
+    <rect class="rm-shadow" x="3" y="15" width="9" height="1" fill="#000" opacity=".45"/>
+    <path class="rm-steam" d="M6.2 9.8Q5.4 8.5 6.3 7.3T6.4 5" fill="none" stroke="#fff" stroke-width=".45" stroke-linecap="round"/>
+    <path class="rm-steam s2" d="M8.5 9.8Q9.3 8.4 8.4 7.1T8.5 5" fill="none" stroke="#fff" stroke-width=".45" stroke-linecap="round"/>
+    <g class="rm-body">
+      <g fill="#DE886D"><rect x="3" y="13" width="1" height="2"/><rect x="5" y="13" width="1" height="2"/><rect x="9" y="13" width="1" height="2"/><rect x="11" y="13" width="1" height="2"/></g>
+      <rect x="2" y="6" width="11" height="7" fill="#DE886D"/>
+      <g class="rm-larm"><rect x="0" y="9" width="2" height="2" fill="#DE886D"/></g>
+      <g class="rm-rarm"><rect x="13" y="9" width="2" height="2" fill="#DE886D"/><g class="rm-spoon"><path d="M13.8 10.2L10.2 12.1" stroke="#d2a56f" stroke-width=".45" stroke-linecap="round"/><ellipse cx="9.8" cy="12.3" rx=".85" ry=".5" fill="#e9c895"/></g></g>
+      <g class="rm-eye" fill="#000"><rect x="4" y="8" width="1" height="2"/><rect x="10" y="8" width="1" height="2"/></g>
+      <path class="rm-happy-eye" d="M3.9 9.2Q4.5 8.5 5.1 9.2" fill="none" stroke="#000" stroke-width=".55" stroke-linecap="round"/>
+      <path class="rm-happy-eye" d="M9.9 9.2Q10.5 8.5 11.1 9.2" fill="none" stroke="#000" stroke-width=".55" stroke-linecap="round"/>
+      <rect class="rm-mouth" x="6.4" y="10.8" width="2.2" height=".8" rx=".4" fill="#7a2230"/><ellipse class="rm-mouth-open" cx="7.5" cy="11.2" rx=".8" ry=".65" fill="#7a2230"/>
+      <path class="rm-happy-mouth" d="M6.3 11.1Q7.5 12.3 8.7 11.1" fill="none" stroke="#7a2230" stroke-width=".55" stroke-linecap="round"/>
+    </g>
+    <g class="rm-bowl"><path d="M3.2 12.2Q7.5 14.8 11.8 12.2L11 14.2Q7.5 16 4 14.2Z" fill="#8bb9d9"/><ellipse cx="7.5" cy="12.2" rx="4.3" ry="1.25" fill="#bfe1f2"/><path d="M4.2 12.1Q7.5 9.7 10.8 12.1Q7.5 13.1 4.2 12.1Z" fill="#fffdf2"/></g>
+  </svg>
+
+  <!-- 洗澡 SVG（照搬 demo，初始隐藏） -->
+  <svg id="shower-svg" xmlns="http://www.w3.org/2000/svg" viewBox="-15 -25 45 45">
+    <!-- 地面阴影 -->
+    <rect class="sh-shad" x="3" y="15" width="9" height="1" fill="#000" opacity=".5"/>
+
+    <!-- 莲蓬头 -->
+    <g class="sh-head">
+      <path d="M 18 -22 Q 14 -16 9 -12" fill="none" stroke="#888" stroke-width="1.2" stroke-linecap="round"/>
+      <rect x="6.5" y="-14" width="5" height="3" rx="1" fill="#aaa"/>
+      <rect x="6.5" y="-11.2" width="5" height=".8" rx=".4" fill="#999"/>
+      <circle cx="7.5"  cy="-10.6" r=".25" fill="#666"/>
+      <circle cx="9"    cy="-10.6" r=".25" fill="#666"/>
+      <circle cx="10.5" cy="-10.6" r=".25" fill="#666"/>
+    </g>
+
+    <!-- 水滴 -->
+    <rect class="sh-drop" style="--ds:0s;    --dd:.7s;  --dy:16px" x="7.5"  y="-10" width=".4" height="1.2" rx=".2" fill="#7dcfff"/>
+    <rect class="sh-drop" style="--ds:-.2s;  --dd:.7s;  --dy:15px" x="8.8"  y="-10" width=".4" height="1.2" rx=".2" fill="#9cdeff"/>
+    <rect class="sh-drop" style="--ds:-.4s;  --dd:.75s; --dy:16px" x="10.2" y="-10" width=".4" height="1.2" rx=".2" fill="#7dcfff"/>
+    <rect class="sh-drop" style="--ds:-.12s; --dd:.65s; --dy:17px" x="8.2"  y="-10" width=".35" height="1" rx=".18" fill="#b0eaff"/>
+    <rect class="sh-drop" style="--ds:-.35s; --dd:.8s;  --dy:15px" x="9.6"  y="-10" width=".35" height="1" rx=".18" fill="#9cdeff"/>
+
+    <!-- 螃蟹本体 -->
+    <g class="sh-body">
+      <!-- 脚 -->
+      <g fill="#DE886D">
+        <rect x="3" y="13" width="1" height="2"/>
+        <rect x="5" y="13" width="1" height="2"/>
+        <rect x="9" y="13" width="1" height="2"/>
+        <rect x="11" y="13" width="1" height="2"/>
+      </g>
+      <!-- 躯干 -->
+      <rect x="2" y="6" width="11" height="7" fill="#DE886D"/>
+      <!-- 眼睛 -->
+      <g class="sh-eye" fill="#000">
+        <rect x="4" y="8" width="1" height="2"/>
+        <rect x="10" y="8" width="1" height="2"/>
+      </g>
+      <!-- 右钳 -->
+      <g class="sh-rarm">
+        <rect x="13" y="9" width="2" height="2" rx=".3" fill="#DE886D"/>
+      </g>
+      <!-- 左钳 + 浴花 -->
+      <g class="sh-larm">
+        <rect x="0" y="9" width="2" height="2" rx=".3" fill="#DE886D"/>
+        <g transform="rotate(-45, 1, 12.5)">
+          <rect x="-0.2" y="11.5" width="3.2" height="2.4" rx=".6" fill="#ff8fab"/>
+          <rect x="0.2"  y="11.5" width=".7"  height="2.4" fill="#ffb3c6" opacity=".7"/>
+          <rect x="1.3"  y="11.5" width=".7"  height="2.4" fill="#ffb3c6" opacity=".7"/>
+          <rect x="2.4"  y="11.5" width=".4"  height="2.4" fill="#ffccd5" opacity=".6"/>
+        </g>
+      </g>
+      <!-- 头顶泡沫 -->
+      <ellipse class="sh-foam" cx="7.5" cy="5.8" rx="4.4" ry="1.2" fill="#d8f4ff" opacity=".95"/>
+      <circle class="sh-foam" cx="5.5" cy="4.6" r="1.4" fill="#d8f4ff" opacity=".95"/>
+      <circle class="sh-foam" cx="7.5" cy="3.8" r="1.7" fill="#e8faff" opacity=".98"/>
+      <circle class="sh-foam" cx="9.5" cy="4.6" r="1.4" fill="#d8f4ff" opacity=".95"/>
+    </g>
+
+    <!-- 泡泡 -->
+    <circle class="sh-bubble" style="--bs:0s;   --bd2:2.2s; --by:-8px;  --by2:-12px" cx="2.5"  cy="10" r=".6" fill="none" stroke="#7dcfff" stroke-width=".35"/>
+    <circle class="sh-bubble" style="--bs:-.7s;  --bd2:2s;   --by:-9px;  --by2:-13px" cx="12.8" cy="9"  r=".8" fill="none" stroke="#9cdeff" stroke-width=".3"/>
+    <circle class="sh-bubble" style="--bs:-1.4s; --bd2:2.4s; --by:-7px;  --by2:-11px" cx="1.2"  cy="12" r=".5" fill="none" stroke="#b0eaff" stroke-width=".3"/>
+    <circle class="sh-bubble" style="--bs:-.4s;  --bd2:1.8s; --by:-10px; --by2:-14px" cx="13.8" cy="11" r=".7" fill="none" stroke="#7dcfff" stroke-width=".35"/>
+    <circle class="sh-bubble" style="--bs:-1.1s; --bd2:2.6s; --by:-6px;  --by2:-10px" cx="7.5"  cy="14" r=".45" fill="none" stroke="#c0f0ff" stroke-width=".28"/>
+
+    <!-- 小黄鸭 -->
+    <g transform="translate(-10, 14)">
+      <ellipse cx="7.5" cy="2" rx="2.2" ry="1.4" fill="#ffe033"/>
+      <circle cx="9" cy=".8" r="1.1" fill="#ffe033"/>
+      <ellipse cx="9.9" cy=".9" rx=".6" ry=".35" fill="#ff9900"/>
+      <circle cx="9.2" cy=".4" r=".22" fill="#000"/>
+      <ellipse cx="7.2" cy="1.6" rx=".8" ry=".5" fill="#f5c800" transform="rotate(-15,7.2,1.6)"/>
+    </g>
+  </svg>
+
+  <!-- 浴帘覆盖层 -->
+  <div class="curtain-wrap" id="curtain-wrap">
+    <div class="curtain-left" id="curtain-left">
+      <div class="curtain-rings">
+        <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+      </div>
+    </div>
+    <div class="curtain-right" id="curtain-right">
+      <div class="curtain-rings">
+        <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+      </div>
+    </div>
+  </div>
 
 </div>
 
 <script>
   const svg     = document.getElementById('pet-svg');
+  const mealSvg = document.getElementById('meal-svg');
   const armAnim = document.getElementById('arm-anim');
   const bubble  = document.getElementById('talk-bubble');
 
@@ -792,13 +1511,20 @@
     "🦀", "我在这里呀", "哼，知道啦",
   ];
 
+  // do-angry 出现1次，其他各2次 → angry概率约5%，其余各~10.5%
   const clickActions = [
-    'do-wink', 'do-happy', 'do-love',
-    'do-bubble', 'do-talk', 'do-shy', 'do-scratch',
-  ];
-
-  const doubleClickActions = [
-    'do-wave', 'do-peace',
+    'do-wink', 'do-wink',
+    'do-happy', 'do-happy',
+    'do-love', 'do-love',
+    'do-bubble', 'do-bubble',
+    'do-talk', 'do-talk',
+    'do-shy', 'do-shy',
+    'do-scratch', 'do-scratch',
+    'do-wave', 'do-wave',
+    'do-peace', 'do-peace',
+    'do-water-flower', 'do-water-flower',
+    'do-listen-music', 'do-listen-music',
+    'do-angry',
   ];
 
   const actionDuration = {
@@ -811,23 +1537,199 @@
     'do-scratch': 2200,
     'do-wave':    1600,
     'do-peace':   2000,
+    'do-water-flower': 3000,
+    'do-listen-music': 3500,
     'do-angry':   2100,
   };
 
   let actionTimer    = null;
   let talkTimer      = null;
-  let longPressTimer = null;
-  let isLongPress    = false;
   let isAnimating    = false;
 
-  // 双击判定
-  const DOUBLE_TAP_MS = 300;
-  let lastTapTime     = 0;
+  /* ════════════════════════════════════════
+     睡眠作息系统
+  ════════════════════════════════════════ */
+  
+  // 状态枚举
+  const P = {
+    IDLE:    'idle',
+    YAWN:    'phase-yawn',
+    SLEEP:   'phase-sleep',
+    WAKING:  'phase-waking',
+    DAZE:    'phase-daze',
+    ANGRY:   'phase-angry',
+    RESLEEP: 'phase-resleep',
+  };
+  const ALL_PHASES = Object.values(P).filter(p => p !== 'idle');
+
+  // 时间常量
+  const SLEEP_H  = 23;
+  const WAKE_H   = 7;
+  const YAWN_MS  = 1800;
+  const WAKE_MS  = 900;
+  const DAZE_MS  = 2100;
+  const RESLEEP_MS = 1500;
+  const NUISANCE_MAX     = 4;
+  const NUISANCE_RST_MS  = 8000;
+  const SLEEP_AGAIN_MS   = 5 * 60 * 1000;
+
+  // 状态变量
+  let phase          = P.IDLE;
+  let nuisance       = 0;
+  let phaseTimer     = null;
+  let sleepTimer     = null;
+  let cdTimer        = null;
+  let nuisanceTimer  = null;
+  let bubbleTimer    = null;
+  let firedSleep     = false;
+  let firedWake      = false;
+  let lastDate       = '';
+  let initDone       = false;
+
+  // 台词
+  const murmurLines  = ['唔……', '干嘛……', '嗯……', '别闹……', '困……'];
+  const angryLines   = [
+    '快去睡觉！', '不许打扰我睡觉！', '去睡觉啦！',
+    '再戳我我真生气了！', '已经很晚了快睡！',
+  ];
+  const morningLines = ['早安～', '早上好！', '新的一天开始了～', '早～'];
+
+  function inSleepWindow() {
+    const h = new Date().getHours();
+    return h >= SLEEP_H || h < WAKE_H;
+  }
+
+  function showBubble(text, ms = 2200) {
+    clearTimeout(bubbleTimer);
+    bubble.textContent = text;
+    bubble.classList.add('show');
+    bubbleTimer = setTimeout(() => bubble.classList.remove('show'), ms);
+  }
+
+  function setPhase(p) {
+    svg.classList.remove(...ALL_PHASES);
+    if (p !== P.IDLE) svg.classList.add(p);
+    phase = p;
+  }
+
+  function clearAll() {
+    clearTimeout(phaseTimer);
+    clearTimeout(sleepTimer);
+    clearInterval(cdTimer);
+    clearTimeout(nuisanceTimer);
+  }
+
+  function startSleepAgainTimer() {
+    clearTimeout(sleepTimer);
+    clearInterval(cdTimer);
+    sleepTimer = setTimeout(enterResleep, SLEEP_AGAIN_MS);
+  }
+
+  function enterYawn() {
+    clearAll();
+    setPhase(P.YAWN);
+    showBubble('哈…欠～', 2000);
+    phaseTimer = setTimeout(() => {
+      setPhase(P.SLEEP);
+      nuisance = 0;
+    }, YAWN_MS);
+  }
+
+  function enterSleep() {
+    clearAll();
+    setPhase(P.SLEEP);
+    nuisance = 0;
+  }
+
+  function enterWaking() {
+    clearAll();
+    setPhase(P.WAKING);
+    phaseTimer = setTimeout(() => {
+      setPhase(P.DAZE);
+      phaseTimer = setTimeout(enterAngry, DAZE_MS);
+    }, WAKE_MS);
+  }
+
+  function enterAngry() {
+    clearTimeout(phaseTimer);
+    setPhase(P.ANGRY);
+    nuisance = 0;
+    showBubble(angryLines[Math.floor(Math.random() * angryLines.length)], 3000);
+    startSleepAgainTimer();
+  }
+
+  function enterResleep() {
+    clearAll();
+    setPhase(P.RESLEEP);
+    phaseTimer = setTimeout(enterSleep, RESLEEP_MS);
+  }
+
+  function enterMorningWake() {
+    clearAll();
+    const wasSleeping = [P.SLEEP, P.RESLEEP, P.ANGRY, P.YAWN].includes(phase);
+    if (wasSleeping) {
+      setPhase(P.WAKING);
+      phaseTimer = setTimeout(() => {
+        setPhase(P.DAZE);
+        phaseTimer = setTimeout(() => {
+          setPhase(P.IDLE);
+          showBubble(morningLines[Math.floor(Math.random() * morningLines.length)], 3000);
+        }, DAZE_MS);
+      }, WAKE_MS);
+    } else {
+      setPhase(P.IDLE);
+    }
+  }
+
+  function enterIdle() {
+    clearAll();
+    nuisance = 0;
+    bubble.classList.remove('show');
+    setPhase(P.IDLE);
+  }
+
+  // 时间感知轮询
+  function checkTime() {
+    const now     = new Date();
+    const h       = now.getHours();
+    const m       = now.getMinutes();
+    const s       = now.getSeconds();
+    const dateStr = now.toDateString();
+
+    if (dateStr !== lastDate) {
+      lastDate   = dateStr;
+      firedSleep = false;
+      firedWake  = false;
+    }
+
+    // 23:00 整点 → 入睡
+    if (h === SLEEP_H && m === 0 && s < 10 && !firedSleep) {
+      firedSleep = true;
+      if (phase === P.IDLE) enterYawn();
+    }
+
+    // 07:00 整点 → 起床
+    if (h === WAKE_H && m === 0 && s < 10 && !firedWake) {
+      firedWake = true;
+      enterMorningWake();
+    }
+
+    // 页面加载时，若在睡眠时段且处于待机，静默进入睡着
+    if (!initDone) {
+      initDone = true;
+      if (inSleepWindow() && phase === P.IDLE) {
+        enterSleep();
+      }
+    }
+  }
+
+  setInterval(checkTime, 1000);
+  checkTime();
+
+  /* ══════════════════════════════════════════════════════════════ */
 
   function clearActions() {
     clickActions.forEach(c => svg.classList.remove(c));
-    doubleClickActions.forEach(c => svg.classList.remove(c));
-    svg.classList.remove('do-angry');
     bubble.classList.remove('show');
   }
 
@@ -838,6 +1740,7 @@
     isAnimating = true;
     clearActions();
     void svg.offsetWidth;
+
     svg.classList.add(action);
 
     if (action === 'do-talk') {
@@ -862,94 +1765,266 @@
     }, actionDuration[action]);
   }
 
-  function triggerDoubleClick() {
-    if (isAnimating) return;
-    const action = doubleClickActions[Math.floor(Math.random() * doubleClickActions.length)];
 
-    isAnimating = true;
-    clearActions();
-    void svg.offsetWidth;
-    svg.classList.add(action);
 
-    if (actionTimer) clearTimeout(actionTimer);
-    actionTimer = setTimeout(() => {
-      svg.classList.remove(action);
-      isAnimating = false;
-    }, actionDuration[action]);
-  }
-
-  function triggerAngry() {
-    if (isAnimating) return;
-    isAnimating = true;
-    clearActions();
-    void svg.offsetWidth;
-    svg.classList.add('do-angry');
-
-    if (actionTimer) clearTimeout(actionTimer);
-    actionTimer = setTimeout(() => {
-      svg.classList.remove('do-angry');
-      isAnimating = false;
-    }, actionDuration['do-angry']);
-  }
-
-  /* ── 触摸手势（500ms 长按 / 300ms 双击判定） ── */
-  const LONG_PRESS_MS = 500;
+  /* ── 触摸手势 ── */
 
   svg.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    isLongPress = false;
-    longPressTimer = setTimeout(() => {
-      isLongPress = true;
-      triggerAngry();
-    }, LONG_PRESS_MS);
   }, { passive: false });
 
   svg.addEventListener('touchend', (e) => {
     e.preventDefault();
-    clearTimeout(longPressTimer);
-    if (!isLongPress) {
-      const now = Date.now();
-      if (now - lastTapTime < DOUBLE_TAP_MS) {
-        lastTapTime = 0;
-        triggerDoubleClick();
-      } else {
-        lastTapTime = now;
+    
+    // 过渡动画中不响应
+    if ([P.YAWN, P.WAKING, P.DAZE, P.RESLEEP].includes(phase)) return;
+
+    if (inSleepWindow()) {
+      // 睡眠时段：只走睡觉状态机
+      if (phase === P.SLEEP) {
+        if (Math.random() < 0.0005) {
+          enterWaking();
+        } else {
+          showBubble(murmurLines[Math.floor(Math.random() * murmurLines.length)], 1800);
+        }
+        return;
+      }
+      if (phase === P.ANGRY) {
+        showBubble(angryLines[Math.floor(Math.random() * angryLines.length)], 2500);
+        startSleepAgainTimer();
+        return;
+      }
+    } else {
+      // 活跃时段：普通互动
+      if (phase === P.IDLE) {
         triggerClick();
       }
     }
-    isLongPress = false;
   }, { passive: false });
 
   svg.addEventListener('touchmove', () => {
-    clearTimeout(longPressTimer);
   }, { passive: true });
 
   /* ── 鼠标事件（桌面调试用） ── */
   svg.addEventListener('mousedown', () => {
-    isLongPress = false;
-    longPressTimer = setTimeout(() => {
-      isLongPress = true;
-      triggerAngry();
-    }, LONG_PRESS_MS);
   });
   svg.addEventListener('mouseup', () => {
-    clearTimeout(longPressTimer);
-    if (!isLongPress) {
-      const now = Date.now();
-      if (now - lastTapTime < DOUBLE_TAP_MS) {
-        lastTapTime = 0;
-        triggerDoubleClick();
-      } else {
-        lastTapTime = now;
+    // 过渡动画中不响应
+    if ([P.YAWN, P.WAKING, P.DAZE, P.RESLEEP].includes(phase)) return;
+
+    if (inSleepWindow()) {
+      // 睡眠时段：只走睡觉状态机
+      if (phase === P.SLEEP) {
+        if (Math.random() < 0.0005) {
+          enterWaking();
+        } else {
+          showBubble(murmurLines[Math.floor(Math.random() * murmurLines.length)], 1800);
+        }
+        return;
+      }
+      if (phase === P.ANGRY) {
+        showBubble(angryLines[Math.floor(Math.random() * angryLines.length)], 2500);
+        startSleepAgainTimer();
+        return;
+      }
+    } else {
+      // 活跃时段：普通互动
+      if (phase === P.IDLE) {
         triggerClick();
       }
     }
-    isLongPress = false;
   });
-  svg.addEventListener('mouseleave', () => {
-    clearTimeout(longPressTimer);
-    isLongPress = false;
-  });
+
+
+  /* ── 电量感知系统 ── */
+  const boltEl    = document.getElementById('batt-bolt');
+  const boltLowEl = document.getElementById('batt-bolt-low');
+
+  const LOW_BATT = 20;
+
+  function applyBatteryState(batt) {
+    const pct      = Math.round(batt.level * 100);
+    const charging = batt.charging;
+    const isLow    = !charging && pct <= LOW_BATT;
+
+    if (charging) {
+      boltEl.classList.add('show');
+      boltLowEl.classList.remove('show');
+      svg.classList.remove('state-low-battery');
+    } else {
+      boltEl.classList.remove('show');
+    }
+
+    if (isLow) {
+      boltLowEl.classList.add('show');
+      svg.classList.add('state-low-battery');
+    } else {
+      boltLowEl.classList.remove('show');
+      if (!charging) svg.classList.remove('state-low-battery');
+    }
+
+  }
+
+  if (navigator.getBattery) {
+    navigator.getBattery().then(batt => {
+      applyBatteryState(batt);
+      batt.addEventListener('chargingchange', () => applyBatteryState(batt));
+      batt.addEventListener('levelchange',    () => applyBatteryState(batt));
+    });
+  }
+
+
+  /* ════════════════════════════════════════
+     洗澡动画系统
+  ════════════════════════════════════════ */
+
+  const stage = document.querySelector('.stage');
+  const curtainLeft = document.querySelector('.curtain-left');
+  const curtainRight = document.querySelector('.curtain-right');
+
+  const CURTAIN_CLOSE_MS = 800;  // 合拢时间（快）
+  const CURTAIN_OPEN_MS = 1400;  // 拉开时间（慢）
+  const SHOWER_DURATION = 5 * 60 * 1000;  // 洗澡时长：5分钟
+
+  let showerState = 'idle';  // idle | showering
+  let showerTimer = null;
+
+  // 浴帘控制
+  function closeCurtain() {
+    curtainLeft.classList.remove('opening');
+    curtainRight.classList.remove('opening');
+    curtainLeft.classList.add('active', 'closed');
+    curtainRight.classList.add('active', 'closed');
+  }
+
+  function openCurtain() {
+    curtainLeft.classList.add('opening');
+    curtainRight.classList.add('opening');
+    curtainLeft.classList.remove('closed');
+    curtainRight.classList.remove('closed');
+  }
+
+  function hideCurtain() {
+    curtainLeft.classList.remove('active', 'closed', 'opening');
+    curtainRight.classList.remove('active', 'closed', 'opening');
+  }
+
+  // 开始洗澡流程
+  function startShower() {
+    if (showerState === 'showering') return;
+    if (isAnimating) return;  // 如果正在播放其他动作，跳过
+    
+    showerState = 'showering';
+    stage.classList.add('locked');  // 锁定交互
+    
+    // Step 1: 浴帘合拢
+    closeCurtain();
+    
+    setTimeout(() => {
+      // Step 2: 切换到洗澡 SVG（帘子盖着，用户看不到）
+      stage.classList.add('state-shower');
+      
+      setTimeout(() => {
+        // Step 3: 拉开浴帘，露出洗澡场景
+        openCurtain();
+        
+        setTimeout(() => {
+          // Step 4: 洗澡动画播放 5 分钟
+          showerTimer = setTimeout(() => {
+            endShower();
+          }, SHOWER_DURATION);
+          
+        }, CURTAIN_OPEN_MS + 100);
+        
+      }, 100);
+      
+    }, CURTAIN_CLOSE_MS + 100);
+  }
+
+  // 结束洗澡
+  function endShower() {
+    if (showerTimer) clearTimeout(showerTimer);
+    
+    // Step 1: 浴帘再次合拢
+    closeCurtain();
+    
+    setTimeout(() => {
+      // Step 2: 切换回待机 SVG
+      stage.classList.remove('state-shower');
+      
+      setTimeout(() => {
+        // Step 3: 拉开浴帘
+        openCurtain();
+        
+        setTimeout(() => {
+          // Step 4: 完全隐藏浴帘，解锁交互
+          hideCurtain();
+          stage.classList.remove('locked');
+          showerState = 'idle';
+          
+        }, CURTAIN_OPEN_MS + 100);
+        
+      }, 100);
+      
+    }, CURTAIN_CLOSE_MS + 100);
+  }
+
+  // 时间检查：每分钟检查一次，20:00 自动触发
+  function checkShowerTime() {
+    const now = new Date();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+
+    // 晚上 20:00 且处于待机状态时触发洗澡
+    if (hour === 20 && minute === 0 && showerState === 'idle' && phase === P.IDLE) {
+      startShower();
+    }
+  }
+
+  // 启动洗澡时间轮询
+  setInterval(checkShowerTime, 60 * 1000);
+  checkShowerTime();
+
+  /* ════════════════════════════════════════
+     吃饭动画系统
+  ════════════════════════════════════════ */
+  const MEAL_DURATION = 5 * 60 * 1000;  // 循环播放 5 分钟
+  let mealState = 'idle';
+  let mealTimer = null;
+  let mealFiredDate = '';
+
+  function startMeal() {
+    if (mealState === 'eating' || showerState === 'showering' || phase !== P.IDLE) return false;
+    mealState = 'eating';
+    stage.classList.add('locked', 'state-meal');
+    mealSvg.classList.add('eating');
+    mealTimer = setTimeout(endMeal, MEAL_DURATION);
+    return true;
+  }
+
+  function endMeal() {
+    clearTimeout(mealTimer);
+    mealTimer = null;
+    mealSvg.classList.remove('eating');
+    stage.classList.remove('state-meal');
+    if (showerState !== 'showering') stage.classList.remove('locked');
+    mealState = 'idle';
+  }
+
+  // 12:30 自动吃饭；独立命名，避免覆盖睡眠/洗澡时间检查
+  function checkMealTime() {
+    const now = new Date();
+    const dateStr = now.toDateString();
+    if (now.getHours() === 12 && now.getMinutes() === 30 && now.getSeconds() < 10 && mealFiredDate !== dateStr) {
+      if (mealState === 'idle' && showerState === 'idle' && phase === P.IDLE && startMeal()) {
+        mealFiredDate = dateStr;
+      }
+    }
+  }
+
+  setInterval(checkMealTime, 1000);
+  checkMealTime();
+
 </script>
 
 </body>
