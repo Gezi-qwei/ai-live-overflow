@@ -1564,7 +1564,8 @@
 
   // 时间常量
   const SLEEP_H  = 23;
-  const WAKE_H   = 7;
+  const WAKE_H   = 8;
+  const WAKE_M   = 30;
   const YAWN_MS  = 1800;
   const WAKE_MS  = 900;
   const DAZE_MS  = 2100;
@@ -1596,7 +1597,11 @@
 
   function inSleepWindow() {
     const h = new Date().getHours();
-    return h >= SLEEP_H || h < WAKE_H;
+    const m = new Date().getMinutes();
+    if (h >= SLEEP_H) return true;           // 23:00+
+    if (h < WAKE_H) return true;             // 0~7点
+    if (h === WAKE_H && m < WAKE_M) return true; // 8:00~8:29
+    return false;
   }
 
   function showBubble(text, ms = 2200) {
@@ -1708,8 +1713,8 @@
       if (phase === P.IDLE) enterYawn();
     }
 
-    // 07:00 整点 → 起床
-    if (h === WAKE_H && m === 0 && s < 10 && !firedWake) {
+    // 08:30 整点 → 起床
+    if (h === WAKE_H && m === WAKE_M && s < 10 && !firedWake) {
       firedWake = true;
       enterMorningWake();
     }
