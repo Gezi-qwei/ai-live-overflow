@@ -1714,6 +1714,13 @@
       enterMorningWake();
     }
 
+    // 兜底：错过了精确的 07:00 窗口（手机休眠/WebView 挂起），
+    // 只要已经过了起床时间且还在睡，补触发起床
+    if (!inSleepWindow() && [P.SLEEP, P.RESLEEP, P.YAWN].includes(phase)) {
+      firedWake = true;
+      enterMorningWake();
+    }
+
     // 页面加载时，若在睡眠时段且处于待机，静默进入睡着
     if (!initDone) {
       initDone = true;
@@ -1799,6 +1806,10 @@
       if (phase === P.IDLE) {
         triggerClick();
       }
+      // 活跃时段仍卡在睡眠？立即叫醒
+      if ([P.SLEEP, P.ANGRY].includes(phase)) {
+        enterMorningWake();
+      }
     }
   }, { passive: false });
 
@@ -1831,6 +1842,10 @@
       // 活跃时段：普通互动
       if (phase === P.IDLE) {
         triggerClick();
+      }
+      // 活跃时段仍卡在睡眠？立即叫醒
+      if ([P.SLEEP, P.ANGRY].includes(phase)) {
+        enterMorningWake();
       }
     }
   });
